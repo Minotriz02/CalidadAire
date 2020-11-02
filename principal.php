@@ -7,15 +7,18 @@
         header("Location:index.php");
     }
 
-    $sql = "SELECT * FROM registros";
+    $sql = "SELECT * FROM registros ORDER BY FECHAHORA_REGISTRO ASC";
     $sql_G = "SELECT * FROM registros WHERE ID_PROCESADORF=1";
 
+  
+
     $resultado = $mysqli->query($sql);
+
 
     $nombre = $_SESSION['nombre'];
 
     $arreglo = array();
-
+/*
     while ($row = $resultado->fetch_assoc()) {
         echo  $row['PPM'];
     }
@@ -24,16 +27,84 @@
 
     $query=$mysqli->query($sql_G);
     $row=$query->fetch_array();
+*/
+ //edita juan diego
+
+ $totalPPMt=array();
+$totalfechat=array();
+
+$dataPPMsensor2=0;
+$dataPPMsensor3=0;
+$dataPPMsensor4=0;
+$dataPPMsensor1=0;
+
+$fechaPPMsensor2=0;
+$fechaPPMsensor3=0;
+$fechaPPMsensor4=0;
+$fechaPPMsensor1=0;
+$datafecha="";
+
+    //$queryt=$mysqli->query($sql);
+    //$row=$queryt->fetch_array();
+    
+    $totalfechat=array();
+    $totalPPMt=array();
+    $id[]=array();
+    while ($row = $resultado->fetch_assoc()){
+        $totalPPMt[]=$row['PPM'];
+        $totalfechat[]=$row['FECHAHORA_REGISTRO'];
+        $id[]=$row['ID_PROCESADORF'];
+        
+ 
+
+    }
+
+    for($i=0; $i<sizeof($totalPPMt); $i++){
+       
+        if($id[$i]==2){
+            $dataPPMsensor2=$dataPPMsensor2.','.$totalPPMt[$i];
+            echo '<script>';
+            echo 'console.log('. json_encode( $id[$i].': '.$totalPPMt[$i] ) .')';
+            echo '</script>';
+         
+        }
+        if($id[$i]==3){
+            $dataPPMsensor3=$dataPPMsensor3.','.$totalPPMt[$i];
+            
+
+            
+
+        }
+        if($id[$i]==4){
+            $dataPPMsensor4=$dataPPMsensor4.','.$totalPPMt[$i];
+            
+            
+
+        }
+        if($id[$i]==1){
+            $dataPPMsensor1=$dataPPMsensor1.','.$totalPPMt[$i];
+           
+            $datafecha=$datafecha.',"'.$totalfechat[$i].'"';
+
+        }
+    }
+
+
+    //fin juan diego
+    /*
 
     while ($row = $query->fetch_assoc()){
         $totalPPM[]=$row['PPM'];
         $totalfecha[]=$row['FECHAHORA_REGISTRO'];
     }
+
+
     $dataPPM=0;
     for ($i=0; $i<sizeof($totalPPM); $i++){
         $dataPPM=$dataPPM.','.$totalPPM[$i];
         $datafecha=$datafecha.',"'.$totalfecha[$i].'"';
     }
+    */
     $resultado = $mysqli->query($sql);
 
 
@@ -178,7 +249,7 @@
         
         <script>
 
-            var ctx = document.getElementById('myLineChart').getContext('2d');
+var ctx = document.getElementById('myLineChart').getContext('2d');
             var chart = new Chart(ctx, {
                 // The type of chart we want to create
                 type: 'line',
@@ -190,8 +261,30 @@
                         label: 'Sensor #1',
                         //backgroundColor: 'rgb(255, 99, 132)',
                         borderColor: 'rgb(255, 99, 132)',
-                        data: [<?php echo $dataPPM; ?>]
-                    }]
+                        data: [<?php echo $dataPPMsensor1; ?>]
+                    },
+                    {
+                        label: 'Sensor #2',
+                        //backgroundColor: 'rgb(255, 99, 132)',
+                        borderColor: 'rgb(10, 20, 255)',
+                        data: [<?php echo $dataPPMsensor2; ?>]
+
+                    },
+                    {
+                        label: 'Sensor #3',
+                        //backgroundColor: 'rgb(255, 99, 132)',
+                        borderColor: 'rgb(10, 255, 10)',
+                        data: [<?php echo $dataPPMsensor3; ?>]
+
+                    },
+                    {
+                        label: 'Sensor #4',
+                        //backgroundColor: 'rgb(255, 99, 132)',
+                        borderColor: 'rgb(244, 70, 17)',
+                        data: [<?php echo $dataPPMsensor4; ?>]
+
+                    },
+                    ]
                 },
 
                 // Configuration options go here
