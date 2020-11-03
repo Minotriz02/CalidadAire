@@ -16,7 +16,22 @@
     if($_POST){
         $fechamin = $_POST['min'];
         $fechamax= $_POST['max'];
-        $local = $_POST['sensor'];
+        $sqllocal= "";
+        $local = 0;
+
+        if(!empty($_POST['sensor'])) {
+            $step = 0;
+            $local = 1;
+            // Bucle para almacenar y visualizar valores activados checkbox.
+            foreach($_POST['sensor'] as $seleccion) {
+                if($step==0){
+                    $sqllocal = $sqllocal." ID_PROCESADORF = $seleccion ";
+                }else{
+                    $sqllocal = $sqllocal." OR ID_PROCESADORF = $seleccion ";
+                }
+                $step ++;
+            }
+        }
         
         if(strlen($fechamin)>0 && strlen($fechamax)>0 && $local==0){
             $sql = "SELECT * FROM registros WHERE FECHAHORA_REGISTRO BETWEEN '$fechamin' and  '$fechamax'";
@@ -30,22 +45,21 @@
         if(strlen($fechamin)==0 && strlen($fechamax)==0 && $local==0){
             $sql = "SELECT * FROM registros";
         }
-        
+        // SELECT * FROM registros WHERE ID_PROCESADORF = 1 OR ID_PROCESADORF = 2
 
         if(strlen($fechamin)>0 && strlen($fechamax)>0 && !$local==0){
-            $sql = "SELECT * FROM registros WHERE FECHAHORA_REGISTRO BETWEEN '$fechamin' and  '$fechamax' AND ID_PROCESADORF ='$local'";
+            $sql = "SELECT * FROM registros WHERE FECHAHORA_REGISTRO BETWEEN '$fechamin' and  '$fechamax' AND".$sqllocal;
         }
         if(strlen($fechamin)>0 && strlen($fechamax)==0 && !$local==0){
-            $sql = "SELECT * FROM registros WHERE FECHAHORA_REGISTRO > '$fechamin' AND ID_PROCESADORF ='$local'";
+            $sql = "SELECT * FROM registros WHERE FECHAHORA_REGISTRO > '$fechamin' AND".$sqllocal;
         }
         if(strlen($fechamin)==0 && strlen($fechamax)>0 && !$local==0){
-            $sql = "SELECT * FROM registros WHERE FECHAHORA_REGISTRO < '$fechamax' AND ID_PROCESADORF ='$local'";
+            $sql = "SELECT * FROM registros WHERE FECHAHORA_REGISTRO < '$fechamax' AND".$sqllocal;
         }
         if(strlen($fechamin)==0 && strlen($fechamax)==0 && !$local==0){
-            $sql = "SELECT * FROM registros WHERE ID_PROCESADORF ='$local'";
+            $sql = "SELECT * FROM registros WHERE ".$sqllocal;
         }
-    
-    
+        echo $sql;
         $resultado = $mysqli->query($sql);
 
     }else {
@@ -144,31 +158,34 @@
                             <div class="card-header">
                                 <i class="fas fa-chart-area mr-1"></i>
                                 Grafica PPM
-                                <form method="POST" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+                                <tbody><form method="POST" action="<?php echo $_SERVER['PHP_SELF']; ?>">
                                         <tr>
-                                            <td>Fecha y hora minima:</td>
-                                            <td><input type="text" id="min" name="min" placeholder="y-m-d ej: 2020-12-25"></td>
-                                            <td>Fecha y hora maxima:</td>
-                                            <td><input type="text" id="max" name="max" placeholder="y-m-d ej: 2020-12-25"></td>
-                                        
-                                            <td>Escoge una localización:
-                                            <select id="sensor" name="sensor">
-                                                <option value="0" selected >Todas</option>
-                                                <option value="1">Parada 1 (Id sensor = 1)</option>
-                                                <option value="2">Parada 2 (Id sensor = 2)</option>
-                                                <option value="3">Parada 3 (Id sensor = 3)</option>
-                                                <option value="4">Parada 4 (Id sensor = 4)</option>
-                                                <option value="5">Parada 5 (Id sensor = 5)</option>
-                                                <option value="6">Parada 6 (Id sensor = 6)</option>
-                                                <option value="7">Parada 7 (Id sensor = 7)</option>
-                                                <option value="8">Parada 8 (Id sensor = 8)</option>
-                                                <option value="9">Parada 9 (Id sensor = 9)</option>
-                                                <option value="10">Parada 10 (Id sensor = 10)</option>
-                                            </select>
-                                            </td>
+                                            <th>Fecha y hora minima:</th>
+                                            <th><input type="text" id="min" name="min" placeholder="y-m-d ej: 2020-12-25"></th>
                                         </tr>
                                         <tr>
-                                            <button type="submit" class="btn btn-primary">Aplicar filtro</button>
+                                            <th>Fecha y hora maxima:</th>
+                                            <th><input type="text" id="max" name="max" placeholder="y-m-d ej: 2020-12-25"></th>
+                                        </tr>
+                                        <tr>
+                                            <button type="submit" class="btn btn-primary">Aplicar filtro</button><br><br>
+                                        </tr>
+                                        <tr>    
+                                            <th>
+                                                ¿Que localizaciones deseas ver? 
+                                                <br>
+                                                <input type="checkbox" name="sensor[]" value="1"> Parada 1 (Id sensor = 1)<br>  
+                                                <input type="checkbox" name="sensor[]" value="2"> Parada 2 (Id sensor = 2)<br>  
+                                                <input type="checkbox" name="sensor[]" value="3"> Parada 3 (Id sensor = 3)<br>  
+                                                <input type="checkbox" name="sensor[]" value="4"> Parada 4 (Id sensor = 4)<br>  
+                                                <input type="checkbox" name="sensor[]" value="5"> Parada 5 (Id sensor = 5)<br>  
+                                                <input type="checkbox" name="sensor[]" value="6"> Parada 6 (Id sensor = 6)<br>  
+                                                <input type="checkbox" name="sensor[]" value="7"> Parada 7 (Id sensor = 7)<br>  
+                                                <input type="checkbox" name="sensor[]" value="8"> Parada 8 (Id sensor = 8)<br>  
+                                                <input type="checkbox" name="sensor[]" value="9"> Parada 9 (Id sensor = 9)<br>  
+                                                <input type="checkbox" name="sensor[]" value="10"> Parada 10 (Id sensor = 10)<br> 
+                                                <br>
+                                            </th>
                                         </tr>
                                         </form>
                             </div>
