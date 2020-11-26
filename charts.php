@@ -12,12 +12,12 @@
     $nombre = $_SESSION['nombre'];
 //--------------------------------------Grafica-----------------------------------//
     $arreglo = array();
-
+    $local = 0;
     if($_POST){
         $fechamin = $_POST['min'];
         $fechamax= $_POST['max'];
         $sqllocal= "";
-        $local = 0;
+        
 
         if(!empty($_POST['sensor'])) {
             $step = 0;
@@ -63,22 +63,25 @@
         $resultado = $mysqli->query($sql);
 
     }else {
-        $sql = "SELECT * FROM registros";
+        $sql = "SELECT * FROM registros  ORDER BY FECHAHORA_REGISTRO ASC";
+        
     }
 
-    while ($row = $resultado->fetch_assoc()) {
+    /*while ($row = $resultado->fetch_assoc()) { $row=$query->fetch_array();
         $row['PPM'];
-    }
+    }*/
     $totalPPM=array();
     $totalfecha=array();
+    $id=array();
 
     $query=$mysqli->query($sql);
-    $row=$query->fetch_array();
+   
 
     while ($row = $query->fetch_assoc()){
         $totalPPM[]=$row['PPM'];
         $totalfecha[]=$row['FECHAHORA_REGISTRO'];
         $id[]=$row['ID_PROCESADORF'];
+        
     }
     
     $dataPPM=0;
@@ -108,13 +111,12 @@
         
         $dataPPM=$dataPPM.','.$totalPPM[$i];
         
-        $datafecha=$datafecha.',"'.$totalfecha[$i].'"';
+        
+       
         if($id[$i]==2){
             $dataPPMsensor2=$dataPPMsensor2.','.$totalPPM[$i];
-            echo '<script>';
-            echo 'console.log('. json_encode( $id[$i].': '.$totalPPM[$i] ) .')';
-            echo '</script>';
-         
+            
+            
         }
         if($id[$i]==3){
             $dataPPMsensor3=$dataPPMsensor3.','.$totalPPM[$i];
@@ -131,8 +133,25 @@
         }
         if($id[$i]==1){
             $dataPPMsensor1=$dataPPMsensor1.','.$totalPPM[$i];
-           
+        
             
+
+        }
+
+        if($local==0){
+            if($id[$i]==1){
+                $datafecha=$datafecha.',"'.$totalfecha[$i].'"';
+                echo '<script>';
+            echo 'console.log('. json_encode( $id[$i] ) .')';
+            echo '</script>';
+            }
+        }
+        else{
+            
+            $selection= $_POST['sensor'];
+            if($id[$i]==$selection[0]){
+                $datafecha=$datafecha.',"'.$totalfecha[$i].'"';
+            }
 
         }
     }
@@ -238,7 +257,7 @@
                                         </tr>
                                         </form>
                             </div>
-                            <div class="card-body"><canvas id="myLineChart" width="100%" height="30"></canvas></div>
+                            <div class="card-body" style="width:100%; height:80vh"><canvas id="myLineChart" width="100%" height="30"></canvas></div>
                         </div>
                         
                     </div>
@@ -271,7 +290,7 @@
                 data: {
                     labels: [<?php echo $datafecha; ?>],
                     datasets: [{
-                        label: 'Sensor',
+                        label: 'Sensor #1',
                         //backgroundColor: 'rgb(255, 99, 132)',
                         borderColor: 'rgb(255, 99, 132)',
                         data: [<?php echo $dataPPM; ?>]
@@ -300,7 +319,12 @@
                 },
 
                 // Configuration options go here
-                options: {}
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+
+
+                }
             });
         </script>
     </body>

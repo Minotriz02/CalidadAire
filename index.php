@@ -23,7 +23,7 @@
                 $_SESSION['nombre'] = $row['NOMBRE'];
                 $_SESSION['correo'] = $row['CORREO'];
 
-                header("Location: principal.php");
+                header("Location: charts.php");
 
             }else{
                 echo "La contraseña no coincide";
