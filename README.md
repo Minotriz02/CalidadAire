@@ -4,7 +4,8 @@ En este dashboard se puede usar filtros para las gráficas y tablas donde se vis
 
 # Tecnologías usadas:
 -PHP
--Codeigniter
 -JS
 -Arduino
 -SQL
+-CSS
+-HTML
