@@ -12,12 +12,12 @@
     $nombre = $_SESSION['nombre'];
 //--------------------------------------Grafica-----------------------------------//
     $arreglo = array();
-
+    $local = 0;
     if($_POST){
         $fechamin = $_POST['min'];
         $fechamax= $_POST['max'];
         $sqllocal= "";
-        $local = 0;
+        
 
         if(!empty($_POST['sensor'])) {
             $step = 0;
@@ -63,29 +63,97 @@
         $resultado = $mysqli->query($sql);
 
     }else {
-        $sql = "SELECT * FROM registros";
+        $sql = "SELECT * FROM registros  ORDER BY FECHAHORA_REGISTRO ASC";
+        
     }
 
-    while ($row = $resultado->fetch_assoc()) {
+    /*while ($row = $resultado->fetch_assoc()) { $row=$query->fetch_array();
         $row['PPM'];
-    }
+    }*/
     $totalPPM=array();
     $totalfecha=array();
+    $id=array();
 
     $query=$mysqli->query($sql);
-    $row=$query->fetch_array();
+   
 
     while ($row = $query->fetch_assoc()){
         $totalPPM[]=$row['PPM'];
         $totalfecha[]=$row['FECHAHORA_REGISTRO'];
+        $id[]=$row['ID_PROCESADORF'];
+        
     }
     
     $dataPPM=0;
 
+    ///tabres
+    
+    
+    
+    $dataPPMsensor2=0;
+    $dataPPMsensor3=0;
+    $dataPPMsensor4=0;
+    $dataPPMsensor1=0;
+    
+    $fechaPPMsensor2=0;
+    $fechaPPMsensor3=0;
+    $fechaPPMsensor4=0;
+    $fechaPPMsensor1=0;
+    $datafecha="";
+    
+        //$queryt=$mysqli->query($sql);
+        //$row=$queryt->fetch_array();
+        
+
+    //
+
     for ($i=0; $i<sizeof($totalPPM); $i++){
         
         $dataPPM=$dataPPM.','.$totalPPM[$i];
-        $datafecha=$datafecha.',"'.$totalfecha[$i].'"';
+        
+        
+       
+        if($id[$i]==2){
+            $dataPPMsensor2=$dataPPMsensor2.','.$totalPPM[$i];
+            
+            
+        }
+        if($id[$i]==3){
+            $dataPPMsensor3=$dataPPMsensor3.','.$totalPPM[$i];
+            
+
+            
+
+        }
+        if($id[$i]==4){
+            $dataPPMsensor4=$dataPPMsensor4.','.$totalPPM[$i];
+            
+            
+
+        }
+        if($id[$i]==1){
+            $dataPPMsensor1=$dataPPMsensor1.','.$totalPPM[$i];
+        
+            
+
+        }
+
+        if($local==0){
+            if($id[$i]==1){
+                $datafecha=$datafecha.',"'.$totalfecha[$i].'"';
+                echo '<script>';
+            echo 'console.log('. json_encode( $id[$i] ) .')';
+            echo '</script>';
+            }
+        }
+        else{
+            
+            $selection= $_POST['sensor'];
+            if($id[$i]==$selection[0]){
+                $datafecha=$datafecha.',"'.$totalfecha[$i].'"';
+            }
+
+        }
     }
     
 ?>
@@ -189,7 +257,7 @@
                                         </tr>
                                         </form>
                             </div>
-                            <div class="card-body"><canvas id="myLineChart" width="100%" height="30"></canvas></div>
+                            <div class="card-body" style="width:100%; height:80vh"><canvas id="myLineChart" width="100%" height="30"></canvas></div>
                         </div>
                         
                     </div>
@@ -222,15 +290,41 @@
                 data: {
                     labels: [<?php echo $datafecha; ?>],
                     datasets: [{
-                        label: 'Sensor',
+                        label: 'Sensor #1',
                         //backgroundColor: 'rgb(255, 99, 132)',
                         borderColor: 'rgb(255, 99, 132)',
                         data: [<?php echo $dataPPM; ?>]
-                    }]
+                    },
+                    {
+                        label: 'Sensor #2',
+                        //backgroundColor: 'rgb(255, 99, 132)',
+                        borderColor: 'rgb(10, 20, 255)',
+                        data: [<?php echo $dataPPMsensor2; ?>]
+
+                    },
+                    {
+                        label: 'Sensor #3',
+                        //backgroundColor: 'rgb(255, 99, 132)',
+                        borderColor: 'rgb(10, 255, 10)',
+                        data: [<?php echo $dataPPMsensor3; ?>]
+
+                    },
+                    {
+                        label: 'Sensor #4',
+                        //backgroundColor: 'rgb(255, 99, 132)',
+                        borderColor: 'rgb(244, 70, 17)',
+                        data: [<?php echo $dataPPMsensor4; ?>]
+
+                    },]
                 },
 
                 // Configuration options go here
-                options: {}
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+
+
+                }
             });
         </script>
     </body>
